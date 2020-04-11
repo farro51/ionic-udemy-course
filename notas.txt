@@ -1,0 +1,17 @@
+npm install -g @ionic
+ionic start
+ionic generate
+
+-- Para generar apk
+Instalar Android Studio
+    * Agregar SDK y build tools
+    * Instalar java y configurar JAVA_HOME
+    * Si hay problemas de licencias instalar cmdline tools y ejecutar "yes | ./sdkmanager.bat --licenses"
+
+Instalar capacitor
+ng build -> Para crear carpeta www con archivos de despliegue
+ionic capacitor add ios|android -> Crea una carpeta android que es el proyecto q se puede ejecutar en Android Studio
+ionic capacitor copy android -> Copia los objetos de despliegue del www a la carpeta android
+ionic capacitor run android -> Hace todos los pasos anteriores -l si se quiere q se actualice automaticamente
+
+chrome://inspect/ -> Para abrir el debugger tools de chrome sincronizado con la app desplegada en el emulador

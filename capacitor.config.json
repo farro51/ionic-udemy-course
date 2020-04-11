@@ -1,0 +1,8 @@
+{
+  "appId": "com.udemy.course.ionic.angular",
+  "appName": "ionic-first-app",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}
