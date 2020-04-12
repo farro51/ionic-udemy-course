@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
+import { NavController, ModalController } from '@ionic/angular';
+import { PlacesService } from '../../places.service';
+import { Place } from '../../place.model';
+import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
 
 @Component({
   selector: 'app-place-detail',
@@ -8,17 +11,40 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./place-detail.page.scss'],
 })
 export class PlaceDetailPage implements OnInit {
-
-  constructor(private router: Router,
-              private navCtrl: NavController) { }
+  place: Place;
+  constructor(private navCtrl: NavController,
+              private modalCtrl: ModalController,
+              private activatedRoute: ActivatedRoute,
+              private placesService: PlacesService) { }
 
   ngOnInit() {
+    this.activatedRoute.paramMap.subscribe(params => {
+      if (!params.has('placeId')) {
+        this.navCtrl.navigateBack('/places/tabs/discover');
+      }
+      
+      this.place = this.placesService.getPlace(params.get('placeId'));
+    })
   }
 
   onBookPlace() {
     //this.router.navigateByUrl('/places/tabs/discover');
     // Hace el efecto de q esta regresando a la pagina anterior y no creando una nueva
-    this.navCtrl.navigateBack('/places/tabs/discover');
+    //this.navCtrl.navigateBack('/places/tabs/discover'); Se devuelve con el efeto back
     //this.navCtrl.pop(); Solo cuando es garantizado q hay una página previa
+    this.modalCtrl.create({
+      component: CreateBookingComponent,
+      componentProps: {
+        selectedPlace: this.place
+      }
+    }).then(modal => {
+      modal.present();
+      return modal.onDidDismiss();
+    }).then(resultData => {
+      console.log(resultData.data, resultData.role);
+      if (resultData.role === 'confirm') {
+        console.log('BOOKED!');
+      }
+    });
   }
 }

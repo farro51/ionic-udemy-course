@@ -15,3 +15,6 @@ ionic capacitor copy android -> Copia los objetos de despliegue del www a la car
 ionic capacitor run android -> Hace todos los pasos anteriores -l si se quiere q se actualice automaticamente
 
 chrome://inspect/ -> Para abrir el debugger tools de chrome sincronizado con la app desplegada en el emulador
+
+<ion-row align-items- justify-content-></ion-row>
+Alinea vertical y horizontalmente las columnas
