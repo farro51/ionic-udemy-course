@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Place } from 'src/app/places/place.model';
 import { ModalController } from '@ionic/angular';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-create-booking',
@@ -11,6 +12,7 @@ export class CreateBookingComponent implements OnInit {
 
   @Input() selectedPlace: Place;
   @Input() selectedMode: 'select' | 'random';
+  @ViewChild('f', { static: true }) form: NgForm;
   startDate: string;
   endDate: string;
 
@@ -32,8 +34,23 @@ export class CreateBookingComponent implements OnInit {
   }
 
   onBookPlace() {
+    if (!this.form.valid || !this.datesValid()) {
+      return;
+    }
     this.modalController.dismiss({
-      message: 'This is a dummy message!'
+      bookingData: {
+        firstName: this.form.value['first-name'],
+        lastName: this.form.value['last-name'],
+        guestNumber: +this.form.value['guest-number'],
+        startDate: new Date(this.form.value['date-from']),
+        endDate: new Date(this.form.value['date-to']),
+      }
     }, 'confirm');
+  }
+
+  datesValid() {
+    const startDate = new Date(this.form.value['date-from']);
+    const endDate = new Date(this.form.value['date-to']);
+    return endDate > startDate;
   }
 }
