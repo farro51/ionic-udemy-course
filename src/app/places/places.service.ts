@@ -3,6 +3,7 @@ import { Place } from './place.model';
 import { AuthService } from '../auth/auth.service';
 import { BehaviorSubject } from 'rxjs';
 import { take, map, tap, delay } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +36,7 @@ export class PlacesService {
       'abc')
   ]);
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private http: HttpClient) { }
 
   get places() {
     return this._places.asObservable();
@@ -51,13 +52,19 @@ export class PlacesService {
     const newPlace = new Place(Math.random().toString(), title, description,
       'https://static1.bigstockphoto.com/0/8/1/large1500/180367120.jpg', price, dateFrom, dateTo, this.authService.userId);
 
+    return this.http.post('https://ionic-course-backend.firebaseio.com/offered-places.json', {
+      ...newPlace,
+      id: null
+    }).pipe(tap(resData => {
+      console.log(resData);
+    }));
     // take sirve para que el subscribe solo se ejecute una vez y se cancele la subscripcion
-    return this.places.pipe(
-      take(1),
-      delay(1000),
-      tap(places => { // Es como el subscribe pero no consume el observable
-        this._places.next(places.concat(newPlace));
-      }));
+    // return this.places.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap(places => { // Es como el subscribe pero no consume el observable
+    //     this._places.next(places.concat(newPlace));
+    //   }));
   }
 
   editPlace(placeId: string, title: string, description: string) {
