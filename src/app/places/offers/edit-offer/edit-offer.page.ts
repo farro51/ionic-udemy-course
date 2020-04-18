@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NavController, LoadingController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -14,6 +14,8 @@ import { PlacesService } from '../../places.service';
 })
 export class EditOfferPage implements OnInit, OnDestroy {
   place: Place;
+  placeId: string;
+  isLoading = false;
   form: FormGroup = this.formBuilder.group({
     title: [null, Validators.required],
     description: [null, [Validators.required, Validators.maxLength(180)]]
@@ -26,17 +28,31 @@ export class EditOfferPage implements OnInit, OnDestroy {
               private placesService: PlacesService,
               private formBuilder: FormBuilder,
               private router: Router,
-              private loadingController: LoadingController) { }
+              private loadingController: LoadingController,
+              private alertController: AlertController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
       if (!params.has('placeId')) {
         this.navCtrl.navigateBack('/places/tabs/offers');
       }
-
-      this.placesService.getPlace(params.get('placeId')).subscribe(place => {
+      this.placeId = params.get('placeId');
+      this.isLoading = true;
+      this.placeSub = this.placesService.getPlace(this.placeId).subscribe(place => {
         this.place = place;
         this.form.patchValue(this.place);
+        this.isLoading = false;
+      }, error => {
+        this.alertController.create({
+          header: 'An error ocurred!',
+          message: 'Place could not be fetched. Please try again later.',
+          buttons: [{
+            text:'Okay',
+            handler: () => {
+              this.router.navigate(['/places/tabs/offers']);
+            }
+          }]
+        }).then(alertEl => alertEl.present());
       });
     });
   }

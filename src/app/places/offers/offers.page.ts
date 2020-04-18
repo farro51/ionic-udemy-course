@@ -13,36 +13,25 @@ import { Subscription } from 'rxjs';
 export class OffersPage implements OnInit, OnDestroy {
 
   offers: Place[] = [];
+  isLoading = false;
   private placesSub: Subscription;
   constructor(private placesService: PlacesService,
-              private router: Router) { }
+              private router: Router) {
+    this.placesSub = new Subscription();
+  }
 
   ngOnInit() {
-    console.log('OnInit');
-    this.placesSub = this.placesService.places.subscribe(places => {
+    this.placesSub.add(this.placesService.places.subscribe(places => {
       this.offers = places;
       console.log(this.offers);
-    });
+    }));
   }
 
   ionViewWillEnter() {
-    console.log('ionViewWillEnter');
-    console.log(this.offers);
-  }
-
-  ionViewDidEnter() {
-    console.log('ionViewDidEnter');
-    console.log(this.offers);
-  }
-
-  ionViewWillLeave() {
-    console.log('ionViewWillLeave');
-    console.log(this.offers);
-  }
-
-  ionViewDidLeave() {
-    console.log('ionViewDidLeave');
-    console.log(this.offers);
+    this.isLoading = true;
+    this.placesSub.add(this.placesService.fetchPlaces().subscribe(() => {
+      this.isLoading = false;
+    }));
   }
 
   onEdit(offerId: string, slidingItem: IonItemSliding) {
@@ -51,7 +40,6 @@ export class OffersPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log('ngOnDestroy');
     if (this.placesSub) {
       this.placesSub.unsubscribe();
     }
