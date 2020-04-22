@@ -4,6 +4,7 @@ import { AuthService } from '../auth/auth.service';
 import { BehaviorSubject, of } from 'rxjs';
 import { take, map, tap, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { PlaceLocation } from './location.model';
 
 
 // new Place('p1',
@@ -40,6 +41,7 @@ interface PlaceData {
   price: number;
   title: string;
   userId: string;
+  location: PlaceLocation;
 }
 
 @Injectable({
@@ -69,7 +71,8 @@ export class PlacesService {
                 resData[key].price,
                 new Date(resData[key].availableFrom),
                 new Date(resData[key].availableTo),
-                resData[key].userId));
+                resData[key].userId,
+                resData[key].location));
           }
         }
         return places;
@@ -90,15 +93,17 @@ export class PlacesService {
             resData.price,
             new Date(resData.availableFrom),
             new Date(resData.availableTo),
-            resData.userId);
+            resData.userId,
+            resData.location);
         })
       );
   }
 
-  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date) {
+  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation) {
     let generatedId: string;
     const newPlace = new Place(Math.random().toString(), title, description,
-      'https://static1.bigstockphoto.com/0/8/1/large1500/180367120.jpg', price, dateFrom, dateTo, this.authService.userId);
+      'https://static1.bigstockphoto.com/0/8/1/large1500/180367120.jpg', price,
+      dateFrom, dateTo, this.authService.userId, location);
 
     return this.http.post<{name: string}>('https://ionic-course-backend.firebaseio.com/offered-places.json', {
       ...newPlace,
@@ -144,7 +149,8 @@ export class PlacesService {
           oldPlace.price,
           oldPlace.availableFrom,
           oldPlace.availableTo,
-          oldPlace.userId
+          oldPlace.userId,
+          oldPlace.location
         );
         return this.http.put(`https://ionic-course-backend.firebaseio.com/offered-places/${placeId}.json`, {...updatedPlaces[updatedPlaceIndex], id: null});
       }),

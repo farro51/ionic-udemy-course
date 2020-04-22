@@ -22,3 +22,7 @@ Alinea vertical y horizontalmente las columnas
 <ion-grid fixed></ion-grid>Hace q la dimensión del grid no sea el 100% de la pantalla sino q si la pantalla es muy grande deje de crecer
 size-sm="2" => Quiere decir que para las pantallas desde 576px aproximadamente se toma esa dimensión
 offset="1" => Quiere decir que el offset es el mismo para todas las pantallas 
+
+Para las permisos de la aplicación en se debe modificar los archivos:
+ios/App/App/Info.plist
+android/app/src/main/AndroidManifest.xml
