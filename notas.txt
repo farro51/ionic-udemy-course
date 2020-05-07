@@ -26,3 +26,8 @@ offset="1" => Quiere decir que el offset es el mismo para todas las pantallas
 Para las permisos de la aplicación en se debe modificar los archivos:
 ios/App/App/Info.plist
 android/app/src/main/AndroidManifest.xml
+
+npm i -g firebase-tools
+firebase login
+firebase init
+Escoger functions => El proyecto => Javascript => Eslint N => install npm Yes

@@ -1,7 +1,6 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, Input } from '@angular/core';
 import { Capacitor, Plugins, CameraSource, CameraResultType } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
-import { Event } from '@angular/router';
 
 @Component({
   selector: 'app-image-picker',
@@ -9,7 +8,8 @@ import { Event } from '@angular/router';
   styleUrls: ['./image-picker.component.scss'],
 })
 export class ImagePickerComponent implements OnInit {
-  @Output() imagePick = new EventEmitter<string>();
+  @Input() showPreview = false;
+  @Output() imagePick = new EventEmitter<string | File>();
   @ViewChild('filePicker', { static: false }) filePicker: ElementRef<HTMLInputElement>;
   selectedImage: string;
   usePicker = false;
@@ -24,7 +24,7 @@ export class ImagePickerComponent implements OnInit {
   }
 
   onPickImage() {
-    if (!Capacitor.isPluginAvailable('Camera') || this.usePicker) {
+    if (!Capacitor.isPluginAvailable('Camera')) {
       this.filePicker.nativeElement.click();
       return;
     }
@@ -33,18 +33,31 @@ export class ImagePickerComponent implements OnInit {
       source: CameraSource.Prompt,
       correctOrientation: true,
       width: 600,
-      resultType: CameraResultType.DataUrl // CameraResultType.Base64
+      resultType: CameraResultType.Base64 // CameraResultType.DataUrl
     }).then(image => {
-      this.selectedImage = image.dataUrl;// image.base64String;
-      console.log(image.dataUrl);
+      this.selectedImage = image.base64String;// image.dataUrl;
       this.imagePick.emit(image.dataUrl);
     }).catch(error => {
       console.log(error);
+      if (this.usePicker) {
+        this.filePicker.nativeElement.click();
+      }
       return false;
     });
   }
 
   onFileChosen(event: Event) {
+    const pickedFile = (event.target as HTMLInputElement).files[0];
+    if (!pickedFile) {
+      return;
+    }
 
+    const fr = new FileReader();
+    fr.onload = () => {
+      const dataUrl = fr.result.toString();
+      this.selectedImage = dataUrl;
+      this.imagePick.emit(pickedFile);
+    }
+    fr.readAsDataURL(pickedFile);
   }
 }

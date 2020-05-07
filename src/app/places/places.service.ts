@@ -99,11 +99,18 @@ export class PlacesService {
       );
   }
 
-  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation) {
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append('image', image);
+    return this.http.post<{imageUrl: string, imagePath: string}>(
+      'https://us-central1-ionic-course-backend.cloudfunctions.net/storeImage',
+      uploadData);
+  }
+
+  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation, imageUrl: string) {
     let generatedId: string;
     const newPlace = new Place(Math.random().toString(), title, description,
-      'https://static1.bigstockphoto.com/0/8/1/large1500/180367120.jpg', price,
-      dateFrom, dateTo, this.authService.userId, location);
+    imageUrl, price, dateFrom, dateTo, this.authService.userId, location);
 
     return this.http.post<{name: string}>('https://ionic-course-backend.firebaseio.com/offered-places.json', {
       ...newPlace,
